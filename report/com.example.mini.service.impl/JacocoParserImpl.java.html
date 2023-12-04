@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JacocoParserImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.example.mini.service.impl</a> &gt; <span class="el_source">JacocoParserImpl.java</span></div><h1>JacocoParserImpl.java</h1><pre class="source lang-java linenums">package com.example.mini.service.impl;
+import cn.hutool.core.io.FileUtil;
+import com.example.mini.service.JacocoParserService;
+import org.jacoco.core.analysis.*;
+import org.jacoco.core.data.ExecutionDataStore;
+import org.jacoco.core.data.SessionInfoStore;
+import org.jacoco.core.tools.ExecFileLoader;
+import org.jacoco.report.DirectorySourceFileLocator;
+import org.jacoco.report.FileMultiReportOutput;
+import org.jacoco.report.IReportVisitor;
+import org.jacoco.report.html.HTMLFormatter;
+import org.springframework.stereotype.Service;
+import org.jacoco.report.internal.html.page.ReportPage;
+import java.io.File;
+import java.io.IOException;
+
+@Service
+<span class="nc" id="L18">public class JacocoParserImpl implements JacocoParserService {</span>
+
+    public static void parse() {
+        // 替换为实际的路径
+<span class="nc" id="L22">        String dumpPath = &quot;../../jacoco&quot;;</span>
+<span class="nc" id="L23">        String classFilesPath = &quot;../../target/classes&quot;;</span>
+<span class="nc" id="L24">        String srcPath = &quot;../../src/main/java&quot;;</span>
+<span class="nc" id="L25">        String reportPath = &quot;../../report&quot;;</span>
+
+<span class="nc" id="L27">        dumpPath = FileUtil.getAbsolutePath(dumpPath);</span>
+<span class="nc" id="L28">        classFilesPath = FileUtil.getAbsolutePath(classFilesPath);</span>
+<span class="nc" id="L29">        srcPath = FileUtil.getAbsolutePath(srcPath);</span>
+<span class="nc" id="L30">        reportPath = FileUtil.getAbsolutePath(reportPath);</span>
+
+<span class="nc" id="L32">        File execFile = new File(dumpPath + File.separator + &quot;jacoco.exec&quot;);</span>
+<span class="nc" id="L33">        ExecFileLoader execFileLoader = new ExecFileLoader();</span>
+        try {
+<span class="nc" id="L35">            execFileLoader.load(execFile);</span>
+<span class="nc" id="L36">        } catch (IOException e) {</span>
+<span class="nc" id="L37">            e.printStackTrace();</span>
+<span class="nc" id="L38">        }</span>
+
+<span class="nc" id="L40">        CoverageBuilder coverageBuilder = new CoverageBuilder();</span>
+
+<span class="nc" id="L42">        Analyzer analyzer = new Analyzer(execFileLoader.getExecutionDataStore(), coverageBuilder);</span>
+        try {
+<span class="nc" id="L44">            analyzer.analyzeAll(new File(classFilesPath));</span>
+<span class="nc" id="L45">        } catch (IOException e) {</span>
+<span class="nc" id="L46">            e.printStackTrace();</span>
+<span class="nc" id="L47">        }</span>
+
+<span class="nc" id="L49">        String reportTitle = &quot;Coverage Report&quot;;</span>
+<span class="nc" id="L50">        IBundleCoverage bundleCoverage = coverageBuilder.getBundle(reportTitle);</span>
+
+<span class="nc" id="L52">        HTMLFormatter htmlFormatter = new HTMLFormatter();</span>
+<span class="nc" id="L53">        IReportVisitor reportVisitor = null;</span>
+        try {
+<span class="nc" id="L55">            reportVisitor = htmlFormatter.createVisitor(new FileMultiReportOutput(new File(reportPath)));</span>
+<span class="nc" id="L56">        } catch (IOException e) {</span>
+<span class="nc" id="L57">            e.printStackTrace();</span>
+<span class="nc" id="L58">        }</span>
+
+<span class="nc" id="L60">        SessionInfoStore sessionInfoStore = execFileLoader.getSessionInfoStore();</span>
+<span class="nc" id="L61">        ExecutionDataStore executionDataStore = execFileLoader.getExecutionDataStore();</span>
+
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        if (reportVisitor != null) {</span>
+            try {
+<span class="nc" id="L65">                reportVisitor.visitInfo(sessionInfoStore.getInfos(), executionDataStore.getContents());</span>
+<span class="nc" id="L66">                DirectorySourceFileLocator directorySourceFileLocator =</span>
+                        new DirectorySourceFileLocator(new File(srcPath), &quot;utf-8&quot;, 4);
+
+<span class="nc" id="L69">                reportVisitor.visitBundle(bundleCoverage, directorySourceFileLocator);</span>
+<span class="nc" id="L70">                reportVisitor.visitEnd();</span>
+<span class="nc" id="L71">            } catch (IOException e) {</span>
+<span class="nc" id="L72">                e.printStackTrace();</span>
+<span class="nc" id="L73">            }</span>
+        }
+<span class="nc" id="L75">    }</span>
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
